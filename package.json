@@ -1,0 +1,22 @@
+{
+  "name": "git-ops",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "del": "^3.0.0",
+    "git-diff-parser": "^0.1.1",
+    "jenkins": "^0.22.1",
+    "make-dir": "^1.3.0",
+    "matcher": "^1.1.1",
+    "require-all": "^3.0.0",
+    "simple-git": "^1.96.0",
+    "uuid": "^3.3.2"
+  }
+}
