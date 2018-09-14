@@ -1,13 +1,22 @@
-const requireAll = require('require-all');
+const _ = require('lodash');
 
-const requiredConfig = ['jenkins', 'git']
-const configDirectory = __dirname + '/../' + 'config';
+const configDir = 'config/';
 
-module.exports = () => {
-  const config = requireAll(configDirectory);
-  requiredConfig.forEach(configFile => {
-    if(!config[configFile])
-      throw new Error(`there is no ${configFile}.json file in ${configDirectory}`);
-  })
+module.exports = (requestedConfig) => {
+  const configPath = requestedConfig.split('.');
+  const fileName = configPath[0];
+  const path = configPath.slice(1);
+
+  let json;
+  try {
+    json = require(`../${configDir}${fileName}.json`)
+  } catch (e) {
+    throw new Error(`there is no ${fileName}.json file in ${configDir}`);
+  }
+
+  const config = _.get(json, path)
+  if(config === undefined)
+    throw new Error(`there is no config '${path.join('.')}' in ${configDir}${fileName}.json`);
+
   return config;
 }

@@ -2,7 +2,7 @@ const git = require('./git');
 const jenkins = require('./jenkins');
 const getConfig = require('./config');
 
-const { repoPath } = getConfig().git;
+const repoPath = getConfig('git.repoPath');
 
 (async () => {
   const action = await git.getChangeActioner(repoPath)
