@@ -29,7 +29,7 @@ const getGitRepo = async (repoUrl, workspaceDir) => {
 
 const getChangesSinceLastCommit = async repo => {
   const { latest: { hash: latestCommitHash} } = await repo.log();
-  const diff = gitDiffParser(await repo.show(latestCommitHash))
+  const diff = gitDiffParser(await repo.show([latestCommitHash]))
   return diff.commits[0];
 };
 
