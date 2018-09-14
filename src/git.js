@@ -24,36 +24,39 @@ const getGitRepo = async (repoUrl, workspaceDir) => {
   const repoDir = path.join(workspaceDir, repoFolderName);
   await gitClient(workspaceDir).clone(repoUrl, repoDir);
   console.info('...done')
-  return gitClient(repoDir);
+  return repoDir;
 };
 
-const getChangesSinceLastCommit = async repo => {
+const getChangesSinceLastCommit = async repoDir => {
+  const repo = gitClient(repoDir)
   const { latest: { hash: latestCommitHash} } = await repo.log();
   const diff = gitDiffParser(await repo.show([latestCommitHash]))
   return diff.commits[0];
 };
 
-const changeActionBuilder = changes => (pathMatcher, cb) => {
-  const matchedFiles = changes
-    .files
-    .filter(file => matcher.isMatch(file.name, pathMatcher))
-    .map(file => ({
-      ...file,
-      lines: file
-        .lines
-        .filter(line => line.type !== 'normal'),
-    }));
+const changeActionBuilder = (changes, repoDir ) =>
+  (pathMatcher, cb) => {
+    const matchedFiles = changes
+      .files
+      .filter(file => matcher.isMatch(file.name, pathMatcher))
+      .map(file => ({
+        ...file,
+        file: require(path.join(repoDir, file.name)),
+        lines: file
+          .lines
+          .filter(line => line.type !== 'normal'),
+      }));
 
-  if(matchedFiles.length > 0) {
-    cb(pathMatcher.includes('*') ? matchedFiles : matchedFiles[0]);
+    if(matchedFiles.length > 0) {
+      cb(pathMatcher.includes('*') ? matchedFiles : matchedFiles[0]);
+    }
   }
-}
 
 const getChangeActioner = async (remoteRepoUrl) => {
   const workspaceDir = await provisionWorkspaceDir(dir);
-  const repo = await getGitRepo(remoteRepoUrl, workspaceDir);
-  const changesSinceLastCommit = await getChangesSinceLastCommit(repo)
-  return changeActionBuilder(changesSinceLastCommit);
+  const repoDir = await getGitRepo(remoteRepoUrl, workspaceDir);
+  const changesSinceLastCommit = await getChangesSinceLastCommit(repoDir)
+  return changeActionBuilder(changesSinceLastCommit, repoDir);
 };
 
 module.exports = {
