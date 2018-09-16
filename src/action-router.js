@@ -5,7 +5,7 @@ const createActionRouter = () => {
   const thisRouter = {
     newRoute: (route, action) => actionRoutes
       .push({ route: (new Route(route)), action }),
-    filesToActions: files => files
+    filesToActions: files => Promise.all(files
       .map(file => {
         let params;
         const { route, action } = actionRoutes
@@ -15,7 +15,7 @@ const createActionRouter = () => {
       .map(({ route, action, params, file }) => {
         console.info(`'${file.path}' ${action ? 'routed' : 'not routed to an action'}`);
         return action({ ...file, params })
-      }),
+      })),
   }
   return thisRouter;
 }
