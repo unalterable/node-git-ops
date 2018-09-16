@@ -27,38 +27,30 @@ const getGitRepo = async (repoUrl, workspaceDir) => {
   return repoDir;
 };
 
-const getChangesSinceLastCommit = async repoDir => {
+const getDiffSinceLastCommit = async (repoDir) => {
   const repo = gitClient(repoDir)
   const { latest: { hash: latestCommitHash} } = await repo.log();
-  const diff = gitDiffParser(await repo.show([latestCommitHash]))
-  return diff.commits[0];
-};
+  const diff = await repo.show([latestCommitHash]);
+  return diff;
+}
 
-const changeActionBuilder = (changes, repoDir ) =>
-  (pathMatcher, cb) => {
-    const matchedFiles = changes
-      .files
-      .filter(file => matcher.isMatch(file.name, pathMatcher))
-      .map(file => ({
-        ...file,
-        file: require(path.join(repoDir, file.name)),
-        lines: file
-          .lines
-          .filter(line => line.type !== 'normal'),
-      }));
-
-    if(matchedFiles.length > 0) {
-      cb(pathMatcher.includes('*') ? matchedFiles : matchedFiles[0]);
-    }
-  }
-
-const getChangeActioner = async (remoteRepoUrl) => {
+const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
   const workspaceDir = await provisionWorkspaceDir(dir);
   const repoDir = await getGitRepo(remoteRepoUrl, workspaceDir);
-  const changesSinceLastCommit = await getChangesSinceLastCommit(repoDir)
-  return changeActionBuilder(changesSinceLastCommit, repoDir);
+  const diff = await getDiffSinceLastCommit(repoDir)
+  return gitDiffParser(diff)
+    .commits[0]
+    .files
+    .map(file => ({
+      ...file,
+      path: file.name,
+      file: require(path.join(repoDir, file.name)),
+      lines: file
+        .lines
+        .filter(line => line.type !== 'normal'),
+    }));
 };
 
 module.exports = {
-  getChangeActioner,
+  getFilesChangedSinceLastCommit,
 }

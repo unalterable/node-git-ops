@@ -17,6 +17,7 @@
     "make-dir": "^1.3.0",
     "matcher": "^1.1.1",
     "require-all": "^3.0.0",
+    "route-parser": "0.0.5",
     "simple-git": "^1.96.0",
     "uuid": "^3.3.2"
   }

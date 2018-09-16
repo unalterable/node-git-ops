@@ -1,19 +1,38 @@
 const config = require('./config');
-const git = require('./git');
+const { createActionRouter } = require('./actionRouter');
+const { getFilesChangedSinceLastCommit } = require('./git');
 const initJenkins = require('./jenkins');
 
-(async () => {
-  const action = await git.getChangeActioner(config('git.repoUrl'))
+const myJenkins = initJenkins({
+  host: config('jenkins.host'),
+  username: config('jenkins.username'),
+  password: config('jenkins.password'),
+});
 
-  action('projects/**', async (files) => {
-    const jenkins = initJenkins();
-    const info = await jenkins.info()
-    console.log('info', info)
-    console.log('files', files)
-  })
+const buildMyRouter = () => {
+  const router = createActionRouter();
 
-  action('app/*', async (files) => {
-    console.log(files)
-  })
+  router.newRoute('projects/:name/:file', async (file) => {
+    if (file.added || file.renamed){
+      console.log('file', file)
+      const info = await myJenkins.info()
+      console.log('info', info)
+    }
+  });
 
-})().catch(console.error);
+  router.newRoute('*path', async (file) => {
+    console.log(file)
+  });
+
+  return router;
+};
+
+const processRepo = async (repoUrl, router) => {
+  const changedFiles = await getFilesChangedSinceLastCommit(repoUrl)
+  await router.filesToActions(changedFiles);
+};
+
+const myRepo = config('git.repoUrl');
+const myActionRouter = buildMyRouter();
+
+processRepo(myRepo, myActionRouter);
