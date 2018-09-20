@@ -1,10 +1,12 @@
 const fs = require('fs');
+const Mustache = require('mustache');
+
 const Jenkins = require('jenkins');
 
-const readFile = (path) => fs.readFileSync(path).toString();
+const readFile = name => fs.readFileSync(__dirname + '/' + name).toString();
 
-const folderConfig = () => readFile(__dirname + '/config-folder.xml');
-const jobConfig = () => readFile(__dirname + '/config-job.xml');
+const folderConfig = () => readFile('config-folder.xml');
+const pipelineJobConfig = vars => Mustache.render(readFile('config-pipeline-job.xml'), vars);
 
 const jenkinsClient = ({ host, username, password }) => {
   let jenkins = Jenkins({
@@ -13,14 +15,38 @@ const jenkinsClient = ({ host, username, password }) => {
     promisify: true,
   })
 
-  const thisClient = {
+  const thisJenkins = {
     info: () => jenkins.info({depth: 2}),
-    findFolder: async (folder) => (await thisClient.info()).jobs.find(({ jobs, name }) => jobs && name === folder),
+    findFolder: async (folder) => (await thisJenkins.info()).jobs.find(({ jobs, name }) => jobs && name === folder),
     createFolder: name => jenkins.job.create(name, folderConfig()),
-    createJob: name => jenkins.job.create(name, jobConfig()),
+    createPipelineJob: (name, vars) => jenkins.job.create(name, pipelineJobConfig(vars)),
+    createProjectJob: async (projectName, jobName) => {
+      const job = `${projectName}/${jobName}`;
+      try{
+        thisJenkins.destroyJob(job);
+        const folder = await thisJenkins.findFolder(projectName);
+        if(!folder){
+          await thisJenkins.createFolder(projectName);
+        }
+        const options = {
+          gitRepoUrl: 'https://github.com/unalterable/base-webpack-express-app.git',
+          prepScript: 'docker',
+          testScript: 'npm test',
+          buildScript: 'docker',
+        };
+        await thisJenkins.createPipelineJob(job, options);
+        await thisJenkins.triggerBuild(job)
+      }
+      catch(e) {
+        throw Error(`Could not create job '${job}'. ` + e.message);
+      }
+    },
+    triggerBuild: job => jenkins.job.build(job),
+    destroyJob: job => jenkins.job.destroy(job),
+
   };
 
-  return thisClient;
+  return thisJenkins;
 }
 
 module.exports = jenkinsClient;

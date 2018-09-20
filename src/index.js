@@ -2,13 +2,23 @@ const config = require('./config');
 
 const { createActionRouter } = require('./action-router');
 const { getFilesChangedSinceLastCommit } = require('./git');
-const { buildJson } = require('./actions/project');
 
+const myJenkins = initJenkins({
+  host: config('jenkins.host'),
+  username: config('jenkins.username'),
+  password: config('jenkins.password'),
+});
 
 const buildMyRouter = () => {
   const router = createActionRouter();
 
-  router.newRoute('projects/:name/build.json', buildJson);
+  router.newRoute('projects/:name/build.json', async (change) => {
+    const projectName = change.params.name;
+    if (change.added || change.renamed){
+      await myJenkins.createProjectJob(projectName, 'build')
+    }
+  }
+);
 
   router.newRoute('*path', async (file) => {
     console.log(file)

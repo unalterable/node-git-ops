@@ -1,0 +1,40 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.23">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.2">
+      <projectUrl>{{ gitRepoUrl }}/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.54">
+    <script>
+node {
+  agent {
+    docker {
+      image 'maven:3-alpine'
+      label 'my-defined-label'
+      args  '-v /tmp:/tmp'
+    }
+  }
+  git url: '{{ gitRepoUrl }}'
+  nvm('v10'){
+    stage('Preparation') {
+      sh '{{ prepScript }}'
+    }
+    stage('Testing') {
+      sh '{{ testScript }}'
+    }
+    stage('Building') {
+      sh '{{ buildScript }}'
+    }
+  }
+  }
+    </script>
+    <sandbox>false</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
