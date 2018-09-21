@@ -44,7 +44,7 @@ const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
     .map(file => ({
       ...file,
       path: file.name,
-      file: require(path.join(repoDir, file.name)),
+      file: !file.deleted && require(path.join(repoDir, file.name)),
       lines: file
         .lines
         .filter(line => line.type !== 'normal'),
