@@ -8,12 +8,15 @@ const readFile = name => fs.readFileSync(__dirname + '/' + name).toString();
 const folderConfig = () => readFile('config-folder.xml');
 const pipelineJobConfig = vars => Mustache.render(readFile('config-pipeline-job.xml'), vars);
 
+const defaultOptions = {
+  gitRepoUrl: 'https://github.com/unalterable/base-webpack-express-app.git',
+  prepScript: 'docker',
+  testScript: 'npm test',
+  buildScript: 'docker',
+};
+
 const jenkinsClient = ({ host, username, password }) => {
-  let jenkins = Jenkins({
-    baseUrl: `http://${username}:${password}@${host}`,
-    crumbIssuer: true,
-    promisify: true,
-  })
+  let jenkins = Jenkins({baseUrl: `http://${username}:${password}@${host}`, crumbIssuer: true, promisify: true })
 
   const thisJenkins = {
 
@@ -32,12 +35,6 @@ const jenkinsClient = ({ host, username, password }) => {
         if(!folder){
           await thisJenkins.createFolder(projectName);
         }
-        const defaultOptions = {
-          gitRepoUrl: 'https://github.com/unalterable/base-webpack-express-app.git',
-          prepScript: 'docker',
-          testScript: 'npm test',
-          buildScript: 'docker',
-        };
         await thisJenkins.createPipelineJob(job, {...defaultOptions, ...options});
         await thisJenkins.triggerBuild(job)
       }
@@ -49,6 +46,8 @@ const jenkinsClient = ({ host, username, password }) => {
     triggerBuild: job => jenkins.job.build(job),
 
     destroyJob: (projectName, jobName) => jenkins.job.destroy(`${projectName}/${jobName}`),
+
+    destroyFolder: (projectName, jobName) => jenkins.job.destroy(projectName),
 
   };
 

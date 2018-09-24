@@ -22,6 +22,10 @@ const buildMyRouter = () => {
   router.fileRemoved('projects/:name/build.json', async (change) => {
     const projectName = change.params.name;
     await myJenkins.destroyJob(projectName, 'build');
+    const { jobs: jobsInFolder } = await myJenkins.findFolder(projectName);
+    if (jobsInFolder.length === 0){
+      await myJenkins.destroyFolder(projectName);
+    }
   });
 
   router.anyChange('*path', async (file) => {
