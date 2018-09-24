@@ -7,9 +7,9 @@ const ANY_CHANGE = 'anyChange';
 
 const log = (...messages) => console.info(...messages);
 
-const routeSuccessMsg = ({ file, route }) => `'${file.path}': sucessfully routed by '${route.spec}'`;
+const routeSuccessMsg = ({ type, file, route }) => `'${file.path}': sucessfully routed to '${type} | ${route.spec}'`;
 
-const routeFailMsg = ({ file, route }) => `'${file.path}': not routed`;
+const routeFailMsg = ({ file }) => `'${file.path}': not routed`;
 
 const printRouting = routeInfo => {
   log(routeInfo.action ? routeSuccessMsg(routeInfo) : routeFailMsg(routeInfo));
@@ -26,9 +26,9 @@ const isMatchForType = (type, file) => {
 
 const fileToRouteInfo = actionRoutes => file => {
   let params;
-  const { route, action } = actionRoutes.find(({ type, route }) =>
+  const { type, route, action } = actionRoutes.find(({ type, route }) =>
     (isMatchForType(type, file) && (params = route.match(file.path))))
-  return { route, action, params, file };
+  return { type, route, action, params, file };
 };
 
 const executeAction = async ({ action, params, file }) => {
@@ -36,7 +36,7 @@ const executeAction = async ({ action, params, file }) => {
     await action({ ...file, params });
     log(`'${file.path}': successfully actioned`)
   } catch(e){
-    log(`'${file.path}': action failed:`, e)
+    log(`'${file.path}': action failed (${e.message})`)
   }
 }
 
