@@ -8,7 +8,14 @@ const getRepoNotExistMsg = ({ repo: { owner, name } }) => `Err: Repo ${owner}/${
 const getNotCollaboratorMsg = ({ repo: { owner, name }, username }) => `Err: ${username} is not a collaborator on ${owner}/${name}`;
 const getHookExistsMsg = ({ repo: { owner, name }, hookEndpoint }) => `Err: ${hookEndpoint} already exists as a hook on ${owner}/${name}`;
 
-const initConnection = ({ username, token }) => {
+const createWebhookObj = ({ hookEndpoint }) => ({
+  name: 'web',
+  active: true,
+  events: [ 'push' ],
+  config: { url: hookEndpoint, contentType: 'json' },
+});
+
+const initGithub = ({ username, token }) => {
   const auth = { username, password: token };
 
   const getHooks = async ({ repo }) => {
@@ -36,12 +43,7 @@ const initConnection = ({ username, token }) => {
     await checkIsRepoExisting({ repo })
     await checkIsCollaborator({ repo });
     await checkIsHookExisting({ hookEndpoint, auth, repo });
-    const res = await axios.post(getHooksUrl({ repo }), {
-      name: 'web',
-      active: true,
-      events: [ 'push' ],
-      config: { url: hookEndpoint, contentType: 'json' },
-    }, { auth });
+    const res = await axios.post(getHooksUrl({ repo }), createWebhookObj({ hookEndpoint }), { auth });
     return res.data;
   }
 
@@ -49,3 +51,5 @@ const initConnection = ({ username, token }) => {
     setWebhook,
   }
 }
+
+module.exports = initGithub;

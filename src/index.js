@@ -1,14 +1,22 @@
 const config = require('./config');
-const initJenkins = require('./jenkins')
+const initJenkins = require('./jenkins');
+const initGithub = require('./github');
 
 const { createActionRouter } = require('./action-router');
 const { getFilesChangedSinceLastCommit } = require('./git');
+
+const myGitOpsRepo = config('git.gitOpsRepoUrl');
 
 const myJenkins = initJenkins({
   host: config('jenkins.host'),
   username: config('jenkins.username'),
   password: config('jenkins.password'),
 });
+
+const myGithub = initGithub({
+  username: config('github.username'),
+  token: config('github.token'),
+})
 
 const buildMyRouter = () => {
   const router = createActionRouter();
@@ -39,7 +47,6 @@ const processRepo = async (repoUrl, router) => {
   await router.filesToActions(changedFiles);
 };
 
-const myRepo = config('git.repoUrl');
 const myActionRouter = buildMyRouter();
 
-processRepo(myRepo, myActionRouter).catch(console.error);
+processRepo(myGitOpsRepo, myActionRouter).catch(console.error);

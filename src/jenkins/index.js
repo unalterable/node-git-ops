@@ -8,7 +8,7 @@ const pipelineJobConfig = vars => Mustache.render(readFile('config-pipeline-job.
 
 const defaultOptions = { prepScript: 'docker', testScript: 'npm test', buildScript: 'docker' };
 
-const jenkinsClient = ({ host, username, password }) => {
+const initJenkins = ({ host, username, password }) => {
   let jenkins = Jenkins({
     baseUrl: `http://${username}:${password}@${host}`,
     crumbIssuer: true,
@@ -46,4 +46,4 @@ const jenkinsClient = ({ host, username, password }) => {
   return thisJenkins;
 }
 
-module.exports = jenkinsClient;
+module.exports = initJenkins;
