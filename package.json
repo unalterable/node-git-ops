@@ -21,6 +21,7 @@
     "require-all": "^3.0.0",
     "route-parser": "0.0.5",
     "simple-git": "^1.96.0",
+    "url-parse": "^1.4.3",
     "uuid": "^3.3.2"
   }
 }

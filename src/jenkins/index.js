@@ -41,6 +41,7 @@ const initJenkins = ({ host, username, password }) => {
         throw Error(`Could not create job '${job}'. ` + e.message);
       }
     },
+    getGithubHookUrl: () => `http://${host}/github`
   };
 
   return thisJenkins;
