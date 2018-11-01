@@ -22,6 +22,7 @@ const initJenkins = ({ host, username, password }) => {
     destroyFolder: (projectName, jobName) => jenkins.job.destroy(projectName),
     createFolder: (name) => jenkins.job.create(name, folderConfig()),
     createPipelineJob: (name, vars) => jenkins.job.create(name, pipelineJobConfig(vars)),
+    getJobConfig: (name, vars) => jenkins.job.config(name),
     findFolder: async (folder) => {
       const info = await thisJenkins.info();
       return info.jobs.find(({ jobs, name }) => jobs && name === folder)
@@ -41,7 +42,7 @@ const initJenkins = ({ host, username, password }) => {
         throw Error(`Could not create job '${job}'. ` + e.message);
       }
     },
-    getGithubHookUrl: () => `http://${host}/github`
+    getGithubHookUrl: () => `http://${host}/github-webhook`
   };
 
   return thisJenkins;
