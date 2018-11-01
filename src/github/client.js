@@ -1,4 +1,3 @@
-
 const urlParse = require('url-parse');
 const axios = require('axios');
 
@@ -75,12 +74,5 @@ const initConnection = ({ username, token }) => {
   return { setWebhook, removeWebhook }
 }
 
-const parseRepoUrl = (url) => {
-  const parsedUrl = urlParse(url);
-  const path = parsedUrl.pathname.split('/');
-  const owner = path[1];
-  const name = path[2].split('.')[0];
-  return { name, owner };
-}
 
-module.exports = { initConnection, parseRepoUrl };
+module.exports = initConnection;
