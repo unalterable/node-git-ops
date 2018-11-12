@@ -31,7 +31,8 @@ const initJenkins = ({ host, username, password }) => {
       try {
         await thisJenkins.createFolderIfExists(projectName);
         await thisJenkins.createPipelineJob(job, {...defaultOptions, ...options});
-        await thisJenkins.triggerBuild(job)
+        // must build with default params
+        /* await thisJenkins.triggerBuild(job) */
       }
       catch(e) {
         throw Error(`Could not create job '${job}'. `, e.message);
