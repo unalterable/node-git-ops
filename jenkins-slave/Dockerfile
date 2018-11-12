@@ -24,17 +24,10 @@ RUN mkdir -p $NVM_DIR
 RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | sh
 RUN chown -R jenkins $NVM_DIR
 
+RUN nvm install 10 --lts
+RUN nvm alias default node
+
 RUN echo "source /home/jenkins/.nvm/nvm.sh" >> /home/jenkins/.bashrc
-RUN echo "echo bashrc \$(date) >> ~/count" >> /home/jenkins/.bashrc
-
-RUN echo "source /home/jenkins/.nvm/nvm.sh" >> /home/jenkins/.profile
-RUN echo "echo profile \$(date) >> ~/count" >> /home/jenkins/.profile
-
-RUN echo "source /home/jenkins/.nvm/nvm.sh" >>/root/.bashrc
-RUN echo "echo root bashrc \$(date) >> ~/count" >>/root/.bashrc
-
-RUN echo "source /home/jenkins/.nvm/nvm.sh" >> /root/.profile
-RUN echo "echo root profile \$(date) >> ~/count" >> /root/.profile
 
 EXPOSE 22
 
