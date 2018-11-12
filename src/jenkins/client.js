@@ -34,7 +34,7 @@ const initJenkins = ({ host, username, password }) => {
         await thisJenkins.triggerBuild(job)
       }
       catch(e) {
-        throw Error(`Could not create job '${job}'. ` + e.message);
+        throw Error(`Could not create job '${job}'. `, e.message);
       }
     },
     getGithubHookUrl: () => `http://${host}/github-webhook`
