@@ -1,4 +1,3 @@
-const urlParse = require('url-parse');
 const axios = require('axios');
 
 const HOST = 'https://api.github.com';

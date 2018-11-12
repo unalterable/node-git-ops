@@ -1,10 +1,5 @@
-const fs = require('fs');
-const Mustache = require('mustache');
 const Jenkins = require('jenkins');
-
-const readFile = name => fs.readFileSync(__dirname + '/' + name).toString();
-const folderConfig = () => readFile('config-folder.xml');
-const pipelineJobConfig = vars => Mustache.render(readFile('config-pipeline-job.xml'), vars);
+const { createPipelineJobConfig, createFolderConfig } = require('./config-templates/index');
 
 const defaultOptions = { prepScript: 'docker', testScript: 'npm test', buildScript: 'docker' };
 
@@ -20,8 +15,8 @@ const initJenkins = ({ host, username, password }) => {
     triggerBuild: (job) => jenkins.job.build(job),
     destroyJob: (projectName, jobName) => jenkins.job.destroy(`${projectName}/${jobName}`),
     destroyFolder: (projectName, jobName) => jenkins.job.destroy(projectName),
-    createFolder: (name) => jenkins.job.create(name, folderConfig()),
-    createPipelineJob: (name, vars) => jenkins.job.create(name, pipelineJobConfig(vars)),
+    createFolder: (name) => jenkins.job.create(name, createFolderConfig()),
+    createPipelineJob: (name, vars) => jenkins.job.create(name, createPipelineJobConfig(vars)),
     getJobConfig: (name, vars) => jenkins.job.config(name),
     findFolder: async (folder) => {
       const info = await thisJenkins.info();

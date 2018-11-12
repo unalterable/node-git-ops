@@ -10,7 +10,17 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>gitRef</name>
+          <description>Can be a git commit hash, git tag, or git branch name</description>
+          <defaultValue>master</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
       <triggers>
         <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.3">
           <spec></spec>
@@ -19,21 +29,8 @@
     </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.54">
-    <script>properties([pipelineTriggers([githubPush()])])
-node {
-  git url: '{{ gitRepoUrl }}'
-  nvm('v10'){
-    stage('Preparation') {
-      sh '{{ prepScript }}'
-    }
-    stage('Testing') {
-      sh '{{ testScript }}'
-    }
-    stage('Building') {
-      sh '{{ buildScript }}'
-    }
-  }
-}
+    <script>
+      {{ pipelineScript }}
     </script>
     <sandbox>false</sandbox>
   </definition>

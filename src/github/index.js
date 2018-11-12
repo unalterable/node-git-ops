@@ -1,3 +1,4 @@
+const urlParse = require('url-parse');
 const config = require('../config');
 const initClient = require('./client');
 

@@ -1,0 +1,15 @@
+properties([pipelineTriggers([githubPush()])])
+node {
+  git url: '{{ gitRepoUrl }}'
+  sh 'git checkout $gitRef'
+  stage('Preparation') {
+    sh '{{ prepScript }}'
+  }
+  stage('Testing') {
+    sh '{{ testScript }}'
+  }
+  stage('Building') {
+    sh '{{ buildScript }}'
+  }
+}
+    
