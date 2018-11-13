@@ -12,12 +12,12 @@ const initJenkins = ({ host, username, password }) => {
 
   const thisJenkins = {
     info: () => jenkins.info({ depth: 2 }),
-    triggerBuild: (job) => jenkins.job.build(job),
+    triggerBuild: (name, parameters = {}) => jenkins.job.build({ name, parameters }),
     destroyJob: (projectName, jobName) => jenkins.job.destroy(`${projectName}/${jobName}`),
     destroyFolder: (projectName, jobName) => jenkins.job.destroy(projectName),
     createFolder: (name) => jenkins.job.create(name, createFolderConfig()),
     createPipelineJob: (name, vars) => jenkins.job.create(name, createPipelineJobConfig(vars)),
-    getJobConfig: (name, vars) => jenkins.job.config(name),
+    getJobConfig: (name) => jenkins.job.config(name),
     findFolder: async (folder) => {
       const info = await thisJenkins.info();
       return info.jobs.find(({ jobs, name }) => jobs && name === folder)
@@ -32,7 +32,7 @@ const initJenkins = ({ host, username, password }) => {
         await thisJenkins.createFolderIfExists(projectName);
         await thisJenkins.createPipelineJob(job, {...defaultOptions, ...options});
         // must build with default params
-        /* await thisJenkins.triggerBuild(job) */
+        await thisJenkins.triggerBuild(job)
       }
       catch(e) {
         throw Error(`Could not create job '${job}'. `, e.message);
