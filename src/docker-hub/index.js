@@ -27,9 +27,9 @@ const getNextVersion = ({ dockerHubRepo, increment }) => {
       .last()
     )
     .then(currentVersion => currentVersion || { major: 0, minor: 0, patch: 0 })
+    .catch(err => ({ major: 0, minor: 0, patch: 0 }))
     .then(incrementVersion(increment))
     .then(console.log)
-    .catch(console.error)
 }
 
 module.exports = { getNextVersion };
