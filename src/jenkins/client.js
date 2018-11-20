@@ -1,8 +1,6 @@
 const Jenkins = require('jenkins');
 const { createPipelineJobConfig, createFolderConfig } = require('./config-templates/index');
 
-const defaultOptions = { prepScript: 'docker', testScript: 'npm test', buildScript: 'docker' };
-
 const initJenkins = ({ host, username, password }) => {
   let jenkins = Jenkins({
     baseUrl: `http://${username}:${password}@${host}`,
@@ -30,12 +28,11 @@ const initJenkins = ({ host, username, password }) => {
       const job = `${projectName}/${jobName}`;
       try {
         await thisJenkins.createFolderIfExists(projectName);
-        await thisJenkins.createPipelineJob(job, {...defaultOptions, ...options});
-        // must build with default params
+        await thisJenkins.createPipelineJob(job, { ...options, projectName });
         await thisJenkins.triggerBuild(job)
       }
       catch(e) {
-        throw Error(`Could not create job '${job}'. `, e.message);
+        throw Error(`Could not create job '${job}'. (${e.message})`);
       }
     },
     getGithubHookUrl: () => `http://${host}/github-webhook`

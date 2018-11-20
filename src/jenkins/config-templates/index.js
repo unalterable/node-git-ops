@@ -1,17 +1,32 @@
 const fs = require('fs');
-const Mustache = require('mustache');
+const { render } = require('mustache');
+const indent = require('indent-string');
 
 const readFile = name => fs.readFileSync(__dirname + '/' + name).toString();
 const scriptsDir = 'default-scripts/';
 
 const createPipelineJobConfig = vars => {
-  const prepScript = vars.prepScript || Mustache.render(readFile(scriptsDir + 'pipeline-prep.sh'), vars);
-  const testScript = vars.testScript || Mustache.render(readFile(scriptsDir + 'pipeline-test.sh'), vars);
-  const buildScript = vars.buildScript || Mustache.render(readFile(scriptsDir + 'pipeline-build.sh'), vars);
+  const jenkinsSlave = vars.jenkinsSlave || 'npm-slave';
 
-  const pipelineScript = Mustache.render(readFile('pipeline-script'), { ...vars, prepScript, testScript, buildScript });
+  const prepScript = vars.prepScript || render(readFile(scriptsDir + 'pipeline-prep.sh'), vars);
+  const testScript = vars.testScript || render(readFile(scriptsDir + 'pipeline-test.sh'), vars);
+  const buildScript = vars.buildScript || render(readFile(scriptsDir + 'pipeline-build.sh'), {
+    imageName: vars.projectName,
+    ...vars,
+  });
 
-  const pipelineJobConfig = Mustache.render(readFile('pipeline-job.xml'), { ...vars, pipelineScript });
+  const pipelineScript = render(readFile('pipeline-script'), {
+    ...vars,
+    jenkinsSlave,
+    prepScript: indent(prepScript, 6),
+    testScript: indent(testScript, 6),
+    buildScript: indent(buildScript, 6),
+  });
+
+  const pipelineJobConfig = render(readFile('pipeline-job.xml'), {
+    ...vars,
+    pipelineScript: indent(pipelineScript, 6),
+  });
 
   return pipelineJobConfig;
 };

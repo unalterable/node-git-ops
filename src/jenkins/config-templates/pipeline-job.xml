@@ -18,6 +18,12 @@
           <defaultValue>master</defaultValue>
           <trim>true</trim>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>versionIncrement</name>
+          <description>Increment the version how? (major, minor, or patch)</description>
+          <defaultValue>patch</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
@@ -30,7 +36,7 @@
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.54">
     <script>
-      {{ pipelineScript }}
+{{{ pipelineScript }}}
     </script>
     <sandbox>false</sandbox>
   </definition>

@@ -13,7 +13,10 @@ const buildMyRouter = () => {
     const projectName = change.params.name;
     const options = change.file;
     await jenkinsClient.createProjectJob(projectName, 'build', options);
-    await githubClient.setWebhook({ repo: parseRepoUrl(options.gitRepo), hookEndpoint: jenkinsClient.getGithubHookUrl() })
+    await githubClient.setWebhook({
+      repo: parseRepoUrl(options.gitRepo),
+      hookEndpoint: jenkinsClient.getGithubHookUrl(),
+    })
   });
 
   router.fileRemoved('projects/:name/build.json', async (change) => {
@@ -22,7 +25,10 @@ const buildMyRouter = () => {
     await jenkinsClient.destroyJob(projectName, 'build');
     const { jobs: jobsInFolder } = await jenkinsClient.findFolder(projectName);
     if (jobsInFolder.length === 0) await jenkinsClient.destroyFolder(projectName);
-    await githubClient.removeWebhook({ repo: parseRepoUrl(options.gitRepo), hookEndpoint: jenkinsClient.getGithubHookUrl() })
+    await githubClient.removeWebhook({
+      repo: parseRepoUrl(options.gitRepo),
+      hookEndpoint: jenkinsClient.getGithubHookUrl(),
+    })
   });
 
   router.anyChange('*path', async (file) => {

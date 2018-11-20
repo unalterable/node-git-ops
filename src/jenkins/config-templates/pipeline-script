@@ -1,15 +1,23 @@
 properties([pipelineTriggers([githubPush()])])
-node {
-  git url: '{{ gitRepoUrl }}'
-  sh 'git checkout $gitRef'
-  stage('Preparation') {
-    sh '{{ prepScript }}'
-  }
-  stage('Testing') {
-    sh '{{ testScript }}'
-  }
-  stage('Building') {
-    sh '{{ buildScript }}'
+withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')])
+{
+  node('{{{ jenkinsSlave }}}'){
+      git url: "{{{ gitRepo }}}"
+      stage('Preparation') {
+        sh '''#! /bin/bash -il
+{{{ prepScript }}}
+        '''
+      }
+      stage('Testing') {
+        sh '''#! /bin/bash -il
+{{{ testScript }}}
+        '''
+      }
+      stage('Building') {
+        sh '''#! /bin/bash -il
+{{{ buildScript }}}
+        '''
+      }
   }
 }
-    
+
