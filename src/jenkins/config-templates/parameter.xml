@@ -1,0 +1,6 @@
+<hudson.model.StringParameterDefinition>
+  <name>{{{ name }}}</name>
+  <description>{{{ description }}}</description>
+  <defaultValue>{{{ defaultValue }}}</defaultValue>
+  <trim>{{{ trimString }}}</trim>
+</hudson.model.StringParameterDefinition>

@@ -1,5 +1,5 @@
 const Jenkins = require('jenkins');
-const { createPipelineJobConfig, createFolderConfig } = require('./config-templates/index');
+const { createBuildJobConfig, createFolderConfig } = require('./config-templates/index');
 
 const initJenkins = ({ host, username, password }) => {
   let jenkins = Jenkins({
@@ -14,7 +14,7 @@ const initJenkins = ({ host, username, password }) => {
     destroyJob: (projectName, jobName) => jenkins.job.destroy(`${projectName}/${jobName}`),
     destroyFolder: (projectName, jobName) => jenkins.job.destroy(projectName),
     createFolder: (name) => jenkins.job.create(name, createFolderConfig()),
-    createPipelineJob: (name, vars) => jenkins.job.create(name, createPipelineJobConfig(vars)),
+    createPipelineJob: (name, vars) => jenkins.job.create(name, createBuildJobConfig(vars)),
     getJobConfig: (name) => jenkins.job.config(name),
     findFolder: async (folder) => {
       const info = await thisJenkins.info();

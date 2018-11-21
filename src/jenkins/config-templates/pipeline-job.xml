@@ -12,18 +12,7 @@
   <properties>
       <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>gitRef</name>
-          <description>Can be a git commit hash, git tag, or git branch name</description>
-          <defaultValue>master</defaultValue>
-          <trim>true</trim>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>versionIncrement</name>
-          <description>Increment the version how? (major, minor, or patch)</description>
-          <defaultValue>patch</defaultValue>
-          <trim>true</trim>
-        </hudson.model.StringParameterDefinition>
+{{{ parameters }}}
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
