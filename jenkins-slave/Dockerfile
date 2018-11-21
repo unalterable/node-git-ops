@@ -21,11 +21,10 @@ RUN echo "alias docker=\"docker -H $DOCKER_URL\"" > /home/jenkins/.bashrc
 
 ENV NVM_DIR /home/jenkins/.nvm
 RUN mkdir -p $NVM_DIR
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | sh
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | sh && \
+  nvm install 10 --lts && \
+  nvm alias default 10
 RUN chown -R jenkins $NVM_DIR
-
-RUN nvm install 10 --lts
-RUN nvm alias default 10
 
 RUN echo "source /home/jenkins/.nvm/nvm.sh" >> /home/jenkins/.bashrc
 
