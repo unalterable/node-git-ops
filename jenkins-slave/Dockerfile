@@ -21,12 +21,10 @@ RUN echo "alias docker=\"docker -H $DOCKER_URL\"" > /home/jenkins/.bashrc
 
 ENV NVM_DIR /home/jenkins/.nvm
 RUN mkdir -p $NVM_DIR
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | sh && \
-  nvm install 10 --lts && \
-  nvm alias default 10
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | sh
 RUN chown -R jenkins $NVM_DIR
-
 RUN echo "source /home/jenkins/.nvm/nvm.sh" >> /home/jenkins/.bashrc
+RUN source /home/jenkins/.nvm/nvm.sh && nvm install 10 --lts && nvm alias default 10
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.11.3/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
