@@ -26,7 +26,7 @@ RUN chown -R jenkins $NVM_DIR
 RUN echo "source /home/jenkins/.nvm/nvm.sh" >> /home/jenkins/.bashrc
 RUN source /home/jenkins/.nvm/nvm.sh && nvm install 10 --lts && nvm alias default 10
 
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.11.3/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+RUN curl -L https://storage.googleapis.com/kubernetes-release/release/v1.11.3/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
 RUN chmod +x /usr/local/bin/kubectl
 
 EXPOSE 22
