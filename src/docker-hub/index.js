@@ -3,15 +3,15 @@ const axios = require('axios');
 
 const incrementVersion = majorMinorPatch => ({ major, minor, patch }) => {
   switch(majorMinorPatch) {
-    case 'major':
-      return `${major + 1}.0.0`
-    case 'minor':
-      return `${major}.${minor + 1}.0`
-    case 'patch':
-    default:
-      return `${major}.${minor}.${patch + 1}`
+  case 'major':
+    return `${major + 1}.0.0`;
+  case 'minor':
+    return `${major}.${minor + 1}.0`;
+  case 'patch':
+  default:
+    return `${major}.${minor}.${patch + 1}`;
   }
-}
+};
 
 const getNextVersion = ({ dockerHubRepo, increment }) => {
   return axios.get(`https://index.docker.io/v1/repositories/${dockerHubRepo}/tags`)
@@ -29,7 +29,7 @@ const getNextVersion = ({ dockerHubRepo, increment }) => {
     .then(currentVersion => currentVersion || { major: 0, minor: 0, patch: 0 })
     .catch(err => ({ major: 0, minor: 0, patch: 0 }))
     .then(incrementVersion(increment))
-    .then(console.log)
-}
+    .then(console.log);
+};
 
 module.exports = { getNextVersion };

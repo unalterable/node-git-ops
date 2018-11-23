@@ -29,49 +29,49 @@ const initConnection = ({ username, token }) => {
   const getHooks = async ({ repo }) => {
     const { data } = await axios.get(getHooksUrl({ repo }), { auth });
     return data;
-  }
+  };
 
   const checkIsRepoExisting = async({ repo }) => {
-    const res = await axios.get(getRepoInfoUrl({ repo }), { auth, validateStatus: false })
+    const res = await axios.get(getRepoInfoUrl({ repo }), { auth, validateStatus: false });
     if (res.status !== 200) throw Error(getRepoNotExistMsg({ repo }));
-  }
+  };
 
   const checkIsCollaborator = async({ repo }) => {
-    const res = await axios.get(getCollaboratorsUrl({ repo, username }), { auth, validateStatus: false })
+    const res = await axios.get(getCollaboratorsUrl({ repo, username }), { auth, validateStatus: false });
     if (res.status !== 204) throw Error(getNotCollaboratorMsg({ repo, username }));
-  }
+  };
 
   const checkHookNotExisting = async ({ hookEndpoint, repo }) => {
     const hooks = await getHooks({ repo, auth });
     const hook = hooks.find(hook => hook.config.url === hookEndpoint);
     if (hook) throw Error(getHookExistsMsg({ hookEndpoint, repo }));
-  }
+  };
 
   const checkHookExistingAndGet = async ({ hookEndpoint, repo }) => {
     const hooks = await getHooks({ repo, auth });
     const hook = hooks.find(hook => hook.config.url === hookEndpoint);
     if (!hook) throw Error(getHookNotExistsMsg({ hookEndpoint, repo }));
     return hook;
-  }
+  };
 
   const setWebhook = async ({ repo, hookEndpoint }) => {
-    await checkIsRepoExisting({ repo })
+    await checkIsRepoExisting({ repo });
     await checkIsCollaborator({ repo });
     await checkHookNotExisting({ hookEndpoint, repo });
     const res = await axios.post(getHooksUrl({ repo }), createWebhookObj({ hookEndpoint }), { auth });
     return res.data;
-  }
+  };
 
   const removeWebhook = async ({ repo, hookEndpoint }) => {
-    await checkIsRepoExisting({ repo })
+    await checkIsRepoExisting({ repo });
     await checkIsCollaborator({ repo });
     const hook = await checkHookExistingAndGet({ hookEndpoint, repo });
     const res = await axios.delete(`${getHooksUrl({ repo })}/${hook.id}`, { auth });
     return res.data;
-  }
+  };
 
-  return { setWebhook, removeWebhook }
-}
+  return { setWebhook, removeWebhook };
+};
 
 
 module.exports = initConnection;
