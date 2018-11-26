@@ -59,8 +59,7 @@ const createBuildJobConfig = vars => {
 };
 
 const createDeployJobConfig = vars => {
-  const jenkinsSlave = vars.jenkinsSlave || defaultJenkinsSlave;
-  const deployScript = vars.deployScript || renderDefaultScript('deploy-step.sh', {
+  const configJSON = JSON.stringify({
     namespace: vars.projectName,
     imageName: vars.projectName,
     serviceName: vars.applicationName || vars.projectName,
@@ -70,6 +69,12 @@ const createDeployJobConfig = vars => {
     maxSurge: 1,
     maxUnavailable: 0,
     ...vars,
+  }, null, 2);
+
+  const jenkinsSlave = vars.jenkinsSlave || defaultJenkinsSlave;
+  const deployScript = vars.deployScript || renderDefaultScript('deploy-step.sh', {
+    configJSON,
+    ...JSON.parse(configJSON),
   });
 
   return renderPipelineJob({
@@ -77,6 +82,7 @@ const createDeployJobConfig = vars => {
     pipelineScript: renderDefaultScript('deploy-pipeline', {
       deployScript,
       jenkinsSlave,
+      gitRepo: 'https://github.com/unalterable/node-git-ops.git',
     }),
   });
 };

@@ -1,6 +1,7 @@
 properties([pipelineTriggers([githubPush()])])
 withCredentials([usernamePassword(credentialsId: 'docker_hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){
   node('{{{ jenkinsSlave }}}'){
+    git url: "{{{ gitRepo }}}"
     withCredentials([file(credentialsId: 'admin.conf', variable: 'KUBECONF')]){
       stage('Deploy') {
         sh '''#! /bin/bash -il

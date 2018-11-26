@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
+    "kubernetesDeployment": "node src/kubernetes/deploy.js",
     "lint": "eslint",
     "lintFix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +24,7 @@
     "mustache": "^2.3.2",
     "require-all": "^3.0.0",
     "route-parser": "0.0.5",
+    "shelljs": "^0.8.3",
     "simple-git": "^1.96.0",
     "url-parse": "^1.4.3",
     "uuid": "^3.3.2"
