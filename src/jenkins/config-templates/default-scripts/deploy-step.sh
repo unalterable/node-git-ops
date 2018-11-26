@@ -44,7 +44,6 @@ spec:
     metadata:
       labels:
         app: {{{ applicationName }}}
-        version: {{{ applicationVersion }}}
     spec:
       containers:
       - name: {{{ applicationName }}}
@@ -53,6 +52,6 @@ spec:
         - containerPort: {{{ containerPort }}}
 ' > deployment.yml
 
-kubectl --kubeconfig="$ADMIN_CONF" apply -f namespace.yml
-kubectl --kubeconfig="$ADMIN_CONF" apply -f deployment.yml
-kubectl --kubeconfig="$ADMIN_CONF" apply -f service.yml
+kubectl --kubeconfig=$KUBECONF apply -f namespace.yml
+kubectl --kubeconfig=$KUBECONF apply -f deployment.yml
+kubectl --kubeconfig=$KUBECONF apply -f service.yml

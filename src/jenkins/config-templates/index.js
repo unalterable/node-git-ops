@@ -31,7 +31,7 @@ const buildJobParams = [
 const deployJobParams = [
   {
     name: 'dockerTag',
-    description: 'The tag (usually a version number) of the image you`re trying to deploy`',
+    description: 'The tag (usually a version number) of the image you\'re trying to deploy',
     defaultValue: 'latest',
     trimString: 'true',
   },
