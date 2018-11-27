@@ -3,39 +3,26 @@ const shell = require('shelljs');
 const manifestBuilder = require('./manifest-builder.js');
 const config = require('../../deployment-config.json');
 
-const namespaceFileName = 'namespace.json';
-const serviceFileName = 'service.json';
-const deploymentFileName = 'deployment.json';
-
-const deployManifest = ({ manifest, fileName }) => {
-  /* const formattedJson = JSON.stringify(manifest, null, 2); */
-  const formattedJson = JSON.stringify(manifest);
-  const command = `kubectl --kubeconfig=$KUBECONF apply ${formattedJson}`;
-  /* fs.writeFileSync(fileName, formattedJson); */
+const deployManifest = (manifest) => {
+  const manifestFile ='manifest.json';
+  const formattedJson = JSON.stringify(manifest, null, 2);
+  fs.writeFileSync(manifestFile, formattedJson);
+  const command = `kubectl --kubeconfig=$KUBECONF apply -f ${manifestFile}`;
   console.info('=============');
-  /* console.info(formattedJson); */
+  console.info(formattedJson);
   console.info(command);
   shell.exec(command);
+  shell.exec(`rm ${manifestFile}`);
   console.info('============= Done');
 };
 
 const doDeployment = ({ imageTag }) => {
-  deployManifest({
-    manifest: manifestBuilder.namespace(config),
-    fileName: namespaceFileName,
-  });
-  deployManifest({
-    manifest: manifestBuilder.service(config),
-    fileName: serviceFileName,
-  });
-  deployManifest({
-    manifest: manifestBuilder.deployment({ ...config, imageTag }),
-    fileName: deploymentFileName,
-  });
+  deployManifest(manifestBuilder.namespace(config));
+  deployManifest(manifestBuilder.service(config));
+  deployManifest(manifestBuilder.deployment({ ...config, imageTag }));
 };
 
 doDeployment({ imageTag: 'latest' });
-/* run kubectl apply manifests */
 
 
 
