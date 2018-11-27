@@ -3,6 +3,14 @@ const shell = require('shelljs');
 const manifestBuilder = require('./manifest-builder.js');
 const config = require('../../deployment-config.json');
 
+const imageTag = (() => {
+  try {
+    return process.argv[2].match(/imageTag=(.*)/)[1];
+  } catch (e) {
+    return 'latest';
+  }
+})();
+
 const deployManifest = (manifest) => {
   const manifestFile ='manifest.json';
   const formattedJson = JSON.stringify(manifest, null, 2);
@@ -22,7 +30,7 @@ const doDeployment = ({ imageTag }) => {
   deployManifest(manifestBuilder.deployment({ ...config, imageTag }));
 };
 
-doDeployment({ imageTag: 'latest' });
+doDeployment({ imageTag });
 
 
 
