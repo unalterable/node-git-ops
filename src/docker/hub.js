@@ -13,7 +13,7 @@ const incrementVersion = majorMinorPatch => ({ major, minor, patch }) => {
   }
 };
 
-const getNextVersion = ({ dockerHubRepo, increment }) => {
+const getNextVersionFromHub = ({ dockerHubRepo, increment }) => {
   return axios.get(`https://index.docker.io/v1/repositories/${dockerHubRepo}/tags`)
     .then(({data}) => _(data)
       .map(({ name }) => name.match(/^([0-9])*\.([0-9]*)\.([0-9]*)$/))
@@ -32,4 +32,4 @@ const getNextVersion = ({ dockerHubRepo, increment }) => {
     .then(console.log);
 };
 
-module.exports = { getNextVersion };
+module.exports = { getNextVersionFromHub };
