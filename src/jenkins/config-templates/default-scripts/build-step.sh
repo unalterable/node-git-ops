@@ -8,7 +8,7 @@ cd ..
 docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 if [ ! -f Dockerfile ]; then
     echo Using default Dockerfile
-    cp ./src/docker/default-Dockerfile ./Dockerfile
+    cp ./$GIT_OPS_DIR/src/docker/default-Dockerfile ./Dockerfile
 fi
 docker build -t {{{ imageName }}}:$version .
 
