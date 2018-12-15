@@ -1,8 +1,8 @@
+const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid/v4');
 const makeDir = require('make-dir');
 const del = require('del');
-const matcher = require('matcher');
 const gitClient = require('simple-git/promise');
 const gitDiffParser = require('git-diff-parser');
 
@@ -44,7 +44,7 @@ const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
     .map(file => ({
       ...file,
       path: file.name,
-      file: !file.deleted && require(path.join(repoDir, file.name)),
+      file: !file.deleted && fs.readFileSync(path.join(repoDir, file.name).toString()),
       lines: file
         .lines
         .filter(line => line.type !== 'normal'),

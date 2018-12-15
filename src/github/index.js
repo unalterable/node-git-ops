@@ -1,10 +1,10 @@
 const urlParse = require('url-parse');
-const config = require('../config');
+const { getConfig } = require('../config');
 const initClient = require('./client');
 
 const githubClient = initClient({
-  username: config('github.username'),
-  token: config('github.token'),
+  username: getConfig('github.username'),
+  token: getConfig('github.token'),
 });
 
 const parseRepoUrl = (url) => {

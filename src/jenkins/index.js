@@ -1,10 +1,10 @@
-const config = require('../config');
+const { getConfig } = require('../config');
 const initClient = require('./client');
 
 const jenkinsClient = initClient({
-  host: config('jenkins.host'),
-  username: config('jenkins.username'),
-  password: config('jenkins.password'),
+  host: getConfig('jenkins.host'),
+  username: getConfig('jenkins.username'),
+  password: getConfig('jenkins.password'),
 });
 
 module.exports = { jenkinsClient };

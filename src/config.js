@@ -2,21 +2,30 @@ const _ = require('lodash');
 
 const configDir = 'config/';
 
-module.exports = (requestedConfig) => {
-  const configPath = requestedConfig.split('.');
-  const fileName = configPath[0];
-  const path = configPath.slice(1);
+const isTestMode = () => process.env.NODE_ENV === 'test';
+const fileName = isTestMode() ? 'test.json' : 'default.json';
+const overrides = {};
 
+const getFile = (fileName) => {
   let json;
   try {
-    json = require(`../${configDir}${fileName}.json`);
+    json = require(`../${configDir}${fileName}`);
   } catch (e) {
     throw new Error(`there is no ${fileName}.json file in ${configDir}`);
   }
+  return json;
+};
 
-  const config = _.get(json, path);
-  if(config === undefined)
-    throw new Error(`there is no config '${path.join('.')}' in ${configDir}${fileName}.json`);
+module.exports = {
+  getConfig: (requestedConfig) => {
+    const configPath = requestedConfig.split('.');
 
-  return config;
+    const config = _.get(overrides, configPath) || _.get(getFile(fileName), configPath);
+
+    if(config === undefined)
+      throw new Error(`there is no config '${configPath.join('.')}' in ${configDir}${fileName}.json`);
+
+    return config;
+  },
+  setConfigOverride: (path, value) => _.set(overrides, path, value),
 };
