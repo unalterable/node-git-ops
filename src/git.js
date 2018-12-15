@@ -44,7 +44,7 @@ const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
     .map(file => ({
       ...file,
       path: file.name,
-      file: !file.deleted && fs.readFileSync(path.join(repoDir, file.name).toString()),
+      file: !file.deleted && JSON.parse(fs.readFileSync(path.join(repoDir, file.name)).toString()),
       lines: file
         .lines
         .filter(line => line.type !== 'normal'),
