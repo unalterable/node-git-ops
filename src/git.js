@@ -7,6 +7,15 @@ const gitClient = require('simple-git/promise');
 const gitDiffParser = require('git-diff-parser');
 
 const dir = path.join(__dirname, '../');
+const readJsonFromFile = (directory, fileName) => {
+  try {
+    const file = fs.readFileSync(path.join(directory, fileName)).toString();
+    return JSON.parse(file);
+  }
+  catch (e) {
+    throw Error (`File '${fileName} could not be read as JSON: ${e}`);
+  }
+};
 
 const provisionWorkspaceDir = async (appDir) => {
   console.info('Clearing Workspace...');
@@ -44,10 +53,8 @@ const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
     .map(file => ({
       ...file,
       path: file.name,
-      file: !file.deleted && JSON.parse(fs.readFileSync(path.join(repoDir, file.name)).toString()),
-      lines: file
-        .lines
-        .filter(line => line.type !== 'normal'),
+      file: !file.deleted && readJsonFromFile(repoDir, file.name),
+      lines: file.lines.filter(line => line.type !== 'normal'),
     }));
 };
 
