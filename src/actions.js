@@ -28,3 +28,5 @@ const teardownDeployJob = async ({ projectName, options }) => {
   const { jobs: jobsInFolder } = await jenkinsClient.findFolder(projectName);
   if (jobsInFolder.length === 0) await jenkinsClient.destroyFolder(projectName);
 };
+
+module.exports = { setupBuildJob, teardownBuildJob, setupDeployJob, teardownDeployJob };

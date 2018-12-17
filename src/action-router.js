@@ -1,7 +1,7 @@
 const Route = require('route-parser');
 
 const FILE_ADDED = 'fileAdded';
-const FILE_ALTERED = 'fileAltered';
+const FILE_CHANGED = 'fileChanged';
 const FILE_REMOVED = 'fileRemoved';
 const ANY_CHANGE = 'anyChange';
 
@@ -20,7 +20,7 @@ const isMatchForType = (type, file) => {
   if(type === ANY_CHANGE) return true;
   if(type === FILE_ADDED) return file.added || file.renamed;
   if(type === FILE_REMOVED) return file.deleted;
-  if(type === FILE_ALTERED) return !file.added && !file.renamed && !file.deleted;
+  if(type === FILE_CHANGED) return !file.added && !file.renamed && !file.deleted;
   return false;
 };
 
@@ -35,8 +35,10 @@ const executeAction = async ({ action, params, file }) => {
   try {
     await action({ ...file, params });
     log(`'${file.path}': successfully actioned`);
+    return 'success';
   } catch(e){
     log(`'${file.path}': action failed (${e.message})`);
+    return 'failure';
   }
 };
 
@@ -47,12 +49,14 @@ const createActionRouter = () => {
 
   const thisRouter = {
     fileAdded: (route, action) => newRoute(FILE_ADDED, route, action),
-    fileChanged: (route, action) => newRoute(FILE_ALTERED, route, action),
+    fileChanged: (route, action) => newRoute(FILE_CHANGED, route, action),
     fileRemoved: (route, action) => newRoute(FILE_REMOVED, route, action),
     anyChange: (route, action) => newRoute(ANY_CHANGE, route, action),
     filesToActions: async files => {
       const actionInstructions = files.map(fileToRouteInfo(actionRoutes)).map(printRouting);
-      for (const actionInstruction of actionInstructions) await executeAction(actionInstruction);
+      const results = [];
+      for (const actionInstruction of actionInstructions) results.push(await executeAction(actionInstruction));
+      return results;
     },
   };
   return thisRouter;

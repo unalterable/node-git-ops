@@ -6,7 +6,8 @@ const myGitOpsRepo = getConfig('git.gitOpsRepoUrl');
 
 const processRepo = async (repoUrl, router) => {
   const changedFiles = await getFilesChangedSinceLastCommit(repoUrl);
-  await router.filesToActions(changedFiles);
+  const results = await router.filesToActions(changedFiles);
+  if(results.some(result => result !== 'success')) throw Error('There were failures');
 };
 
-module.exports = processRepo(myGitOpsRepo, myActionRouter).catch(console.error);
+module.exports = processRepo(myGitOpsRepo, myActionRouter).catch(error => console.error(error) || process.exit(1));
