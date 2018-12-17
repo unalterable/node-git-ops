@@ -1,43 +1,32 @@
-const { jenkinsClient } = require('./jenkins/index');
-const { githubClient, parseRepoUrl } = require('./github/index');
 const { createActionRouter } = require('./action-router');
+const { setupBuildJob, teardownBuildJob, setupDeployJob, teardownDeployJob } = require('./actions');
 
 const router = createActionRouter();
 
 router.fileAdded('projects/:projectName/build.json', async (change) => {
-  const { projectName } = change.params;
-  const options = change.file;
-  await jenkinsClient.createBuildJob(projectName, 'build', options);
-  await githubClient.setWebhook({
-    repo: parseRepoUrl(options.gitRepo),
-    hookEndpoint: jenkinsClient.getGithubHookUrl(),
-  });
+  await setupBuildJob({ projectName: change.params.projectName, options: change.file });
+});
+
+router.fileChanged('projects/:projectName/build.json', async (change) => {
+  await teardownBuildJob({ projectName: change.params.projectName, options: change.file });
+  await setupBuildJob({ projectName: change.params.projectName, options: change.file });
 });
 
 router.fileRemoved('projects/:projectName/build.json', async (change) => {
-  const { projectName } = change.params;
-  const options = change.file;
-  await jenkinsClient.destroyJob(projectName, 'build');
-  const { jobs: jobsInFolder } = await jenkinsClient.findFolder(projectName);
-  if (jobsInFolder.length === 0) await jenkinsClient.destroyFolder(projectName);
-  await githubClient.removeWebhook({
-    repo: parseRepoUrl(options.gitRepo),
-    hookEndpoint: jenkinsClient.getGithubHookUrl(),
-  });
+  await teardownBuildJob({ projectName: change.params.projectName, options: change.file });
 });
 
 router.fileAdded('projects/:projectName/deploy.json', async (change) => {
-  const { projectName } = change.params;
-  const options = change.file;
-  await jenkinsClient.createDeployJob(projectName, 'deploy', options);
+  await setupDeployJob({ projectName: change.params.projectName, options: change.file });
+});
+
+router.fileChanged('projects/:projectName/deploy.json', async (change) => {
+  await teardownDeployJob({ projectName: change.params.projectName, options: change.file });
+  await setupDeployJob({ projectName: change.params.projectName, options: change.file });
 });
 
 router.fileRemoved('projects/:projectName/deploy.json', async (change) => {
-  const { projectName } = change.params;
-  const options = change.file;
-  await jenkinsClient.destroyJob(projectName, 'deploy');
-  const { jobs: jobsInFolder } = await jenkinsClient.findFolder(projectName);
-  if (jobsInFolder.length === 0) await jenkinsClient.destroyFolder(projectName);
+  await teardownDeployJob({ projectName: change.params.projectName, options: change.file });
 });
 
 router.anyChange('*path', async (file) => {});
