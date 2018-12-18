@@ -10,9 +10,10 @@ const increments = {
 const incrementVersion = majorMinorPatch => currentVersion =>
   increments[majorMinorPatch || 'patch'](currentVersion);
 
-const printFormattedNumber = ({ major, minor, patch }) => console.log(`${major}.${minor}.${patch}`);
+const getFormattedNumber = ({ major, minor, patch }) => `${major}.${minor}.${patch}`;
 
-const fetchNextVersionFromHub = ({ dockerHubRepo }) => axios.get(`https://index.docker.io/v1/repositories/${dockerHubRepo}/tags`)
+const fetchNextVersionFromHub = ({ dockerHubRepo }) =>
+  axios.get(`https://index.docker.io/v1/repositories/${dockerHubRepo}/tags`)
   .then(({data}) => _(data)
     .map(({ name }) => name.match(/^([0-9])*\.([0-9]*)\.([0-9]*)$/))
     .filter(match => match)
@@ -27,13 +28,19 @@ const fetchNextVersionFromHub = ({ dockerHubRepo }) => axios.get(`https://index.
   .then(currentVersion => currentVersion || { major: 0, minor: 0, patch: 0 })
   .catch(err => ({ major: 0, minor: 0, patch: 0 }));
 
-const getCurrentVersionFromHub = ({ dockerHubRepo, increment }) =>
-  fetchNextVersionFromHub({ dockerHubRepo })
-    .then(printFormattedNumber);
+const getCurrentVersionFromHub = async ({ dockerHubRepo, increment }) =>{
+  const currentVersion = await fetchNextVersionFromHub({ dockerHubRepo });
+  const formattedCurrentVersion = getFormattedNumber(currentVersion);
+  console.log(formattedCurrentVersion);
+  return formattedCurrentVersion;
+}
 
-const getNextVersionFromHub = ({ dockerHubRepo, increment }) =>
-  fetchNextVersionFromHub({ dockerHubRepo })
-    .then(incrementVersion(increment))
-    .then(printFormattedNumber);
+const getNextVersionFromHub = async ({ dockerHubRepo, increment }) =>{
+  const currentVersion = await fetchNextVersionFromHub({ dockerHubRepo });
+  const nextVersion = incrementVersion(increment)(currentVersion);
+  const formattedNextVersion = getFormattedNumber(nextVersion);
+  console.log(formattedNextVersion);
+  return formattedNextVersion;
+}
 
 module.exports = { getNextVersionFromHub, getCurrentVersionFromHub };

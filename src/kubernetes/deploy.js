@@ -28,6 +28,7 @@ const deployManifest = (manifest) => {
 
 const doDeployment = async () => {
   const imageTag = await getImageTag();
+  console.log(imageTag)
   deployManifest(manifestBuilder.namespace(config));
   deployManifest(manifestBuilder.service(config));
   deployManifest(manifestBuilder.deployment({ ...config, imageTag }));
