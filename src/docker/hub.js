@@ -36,4 +36,4 @@ const getNextVersionFromHub = ({ dockerHubRepo, increment }) =>
     .then(incrementVersion(increment))
     .then(printFormattedNumber);
 
-module.exports = { getNextVersionFromHub };
+module.exports = { getNextVersionFromHub, getCurrentVersionFromHub };
