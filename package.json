@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "kubernetesDeployment": "node src/kubernetes/deploy.js",
+    "kubernetesDeploymentConfirmation": "node src/kubernetes/confirm.js",
     "lint": "eslint",
     "lintFix": "eslint . --fix",
     "test": "NODE_ENV=test mocha --timeout=60000 test/**.test.js"

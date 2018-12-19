@@ -68,6 +68,7 @@ const createDeployJobConfig = vars => {
     replicas: 1,
     maxSurge: 1,
     maxUnavailable: 0,
+    progressDeadlineSeconds: 600,
     ...vars,
   }, null, 2);
 

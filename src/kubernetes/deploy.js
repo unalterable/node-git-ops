@@ -30,6 +30,10 @@ const deployManifest = (manifest) => {
 const doDeployment = async () => {
   const uuid = uuidv4();
   const imageTag = await getImageTag();
+  console.info('=============');
+  console.info('ID for this release:');
+  console.info(uuid);
+  console.info('=============');
   console.log(imageTag);
   deployManifest(manifestBuilder.namespace({ ...config, uuid }));
   deployManifest(manifestBuilder.service({ ...config, uuid }));
