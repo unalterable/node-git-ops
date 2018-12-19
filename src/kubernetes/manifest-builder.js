@@ -1,13 +1,13 @@
 const namespace = ({ namespace, uuid }) => ({
   apiVersion: 'v1',
   kind: 'Namespace',
-  metadata: { name: `${namespace}-${uuid}` },
+  metadata: { name: namespace, labels: { uuid } },
 });
 
 const service = ({ serviceName, namespace, applicationName, containerPort, nodePort, uuid }) => ({
   apiVersion: 'v1',
   kind: 'Service',
-  metadata: { name: `${serviceName}-${uuid}`, namespace },
+  metadata: { name: serviceName, namespace, labels: { uuid } },
   spec: {
     type: 'NodePort',
     selector: { app: applicationName },
@@ -18,9 +18,9 @@ const deployment = ({ applicationName, imageName, imageTag, containerPort, names
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
-    name: `${applicationName}-deployment${uuid}`,
+    name: `${applicationName}-${uuid}`,
     namespace,
-    labels: { app: applicationName }
+    labels: { app: applicationName, uuid }
   },
   spec: {
     replicas,
