@@ -1,24 +1,24 @@
-const namespace = ({ namespace }) => ({
+const namespace = ({ namespace, uuid }) => ({
   apiVersion: 'v1',
   kind: 'Namespace',
-  metadata: { name: namespace },
+  metadata: { name: `${namespace}-${uuid}` },
 });
 
-const service = ({ serviceName, namespace, applicationName, containerPort, nodePort }) => ({
+const service = ({ serviceName, namespace, applicationName, containerPort, nodePort, uuid }) => ({
   apiVersion: 'v1',
   kind: 'Service',
-  metadata: { name: serviceName, namespace },
+  metadata: { name: `${serviceName}-${uuid}`, namespace },
   spec: {
     type: 'NodePort',
     selector: { app: applicationName },
     ports: [nodePort ? { port: containerPort, nodePort } : { port: containerPort }]},
 });
 
-const deployment = ({ applicationName, imageName, imageTag, containerPort, namespace, replicas, maxSurge, maxUnavailable }) => ({
+const deployment = ({ applicationName, imageName, imageTag, containerPort, namespace, replicas, maxSurge, maxUnavailable, uuid }) => ({
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
-    name: `${applicationName}-deployment`,
+    name: `${applicationName}-deployment${uuid}`,
     namespace,
     labels: { app: applicationName }
   },

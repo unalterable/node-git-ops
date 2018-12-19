@@ -1,5 +1,6 @@
 const fs = require('fs');
 const shell = require('shelljs');
+const uuid = require('uuid/v4');
 const manifestBuilder = require('./manifest-builder.js');
 const { getCurrentVersionFromHub } = require('../docker/hub');
 const config = require('../../deployment-config.json');
@@ -27,11 +28,12 @@ const deployManifest = (manifest) => {
 };
 
 const doDeployment = async () => {
+  const uuid = uuid();
   const imageTag = await getImageTag();
   console.log(imageTag)
-  deployManifest(manifestBuilder.namespace(config));
-  deployManifest(manifestBuilder.service(config));
-  deployManifest(manifestBuilder.deployment({ ...config, imageTag }));
+  deployManifest(manifestBuilder.namespace({ ...config, uuid }));
+  deployManifest(manifestBuilder.service({ ...config, uuid }));
+  deployManifest(manifestBuilder.deployment({ ...config, uuid, imageTag }));
 };
 
 doDeployment();
