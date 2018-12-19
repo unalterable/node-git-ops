@@ -78,10 +78,13 @@ const createDeployJobConfig = vars => {
     ...JSON.parse(configJSON),
   });
 
+  const confirmScript = vars.confirmScript || renderDefaultScript('confirm-step.sh', {});
+
   return renderPipelineJob({
     parameters: renderJobParams(deployJobParams.concat(vars.parameters || [])),
     pipelineScript: renderDefaultScript('deploy-pipeline', {
       deployScript,
+      confirmScript,
       jenkinsSlave,
       gitRepo: 'https://github.com/unalterable/node-git-ops.git',
     }),

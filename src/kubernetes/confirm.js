@@ -1,7 +1,7 @@
 const shell = require('shelljs');
 const config = require('../../deployment-config.json');
 
-const rolloutStatusCommand = `kubectl --kubeconfig=$KUBECONF rollout status deploy ${config.imageName}`;
+const rolloutStatusCommand = `kubectl --kubeconfig=$KUBECONF rollout status deploy ${config.applicationName}`;
 
 console.info('=============');
 
