@@ -3,12 +3,19 @@ const config = require('../../deployment-config.json');
 
 const kubeConf = '--kubeconfig=$KUBECONF';
 const namespace = `--namespace=${config.namespace}`;
-const rolloutStatusCommand = `kubectl ${kubeConf} ${namespace} rollout status deployment ${config.applicationName}`;
+const kubectlCmd = `kubectl ${kubeConf} ${namespace}`;
+const rolloutStatusCommand = `${kubectlCmd} rollout status deployment ${config.applicationName}`;
+const rollbackCommand = `${kubectlCmd} rollout undo deployment ${config.applicationName}`;
+
+const exec = cmd => console.info(cmd) || shell.exec(cmd);
 
 console.info('=============');
 
-console.info(rolloutStatusCommand);
-shell.exec(rolloutStatusCommand);
-if (shell.error()) throw Error('Failed');
+exec(rolloutStatusCommand);
+if (shell.error()) {
+  console.info('DEPLOYMENT FAILURE - ATTEMPTING ROLLBACK');
+  exec(rollbackCommand);
+  process.exit(1);
+}
 
 console.info('============= Done');
