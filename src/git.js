@@ -7,6 +7,10 @@ const gitClient = require('simple-git/promise');
 const gitDiffParser = require('git-diff-parser');
 
 const dir = path.join(__dirname, '../');
+
+const getPrevCommitHash = repo => repo.log().then(log => log.all[1].hash);
+const getFirstCommitHash = repo => repo.log().then(log => log.all[log.all.length-1].hash);
+
 const readJsonFromFile = (directory, fileName) => {
   try {
     const file = fs.readFileSync(path.join(directory, fileName)).toString();
@@ -20,7 +24,7 @@ const readJsonFromFile = (directory, fileName) => {
 const provisionWorkspaceDir = async (appDir) => {
   console.info('Clearing Workspace...');
   const gitWorkspaceFolderName = 'git-workspace';
-  const gitWorkspaceDir = path.join(dir, gitWorkspaceFolderName);
+  const gitWorkspaceDir = path.join(appDir, gitWorkspaceFolderName);
   await del(gitWorkspaceDir);
   await makeDir(gitWorkspaceDir);
   console.info('...done');
@@ -36,19 +40,19 @@ const getGitRepo = async (repoUrl, workspaceDir) => {
   return repoDir;
 };
 
-const getDiffSinceLastCommit = async (repoDir) => {
+const getDiff = async (repoDir, since) => {
   const repo = gitClient(repoDir);
-  const { latest: { hash: latestCommitHash} } = await repo.log();
-  const diff = await repo.show([latestCommitHash]);
-  return diff;
+  const getHash = {'last commit': getPrevCommitHash, 'first commit': getFirstCommitHash }[since];
+  const hash = getHash ? await getHash(repo) : since;
+  const diff = await repo.diff([hash]);
+  return gitDiffParser(diff).commits[0];
 };
 
-const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
+const getFilesChanged = async ({ repoUrl, since }) => {
   const workspaceDir = await provisionWorkspaceDir(dir);
-  const repoDir = await getGitRepo(remoteRepoUrl, workspaceDir);
-  const diff = await getDiffSinceLastCommit(repoDir);
-  return gitDiffParser(diff)
-    .commits[0]
+  const repoDir = await getGitRepo(repoUrl, workspaceDir);
+  const diff = await getDiff(repoDir, since || 'last commit');
+  return diff
     .files
     .map(file => ({
       ...file,
@@ -59,5 +63,5 @@ const getFilesChangedSinceLastCommit = async (remoteRepoUrl) => {
 };
 
 module.exports = {
-  getFilesChangedSinceLastCommit,
+  getFilesChanged,
 };
