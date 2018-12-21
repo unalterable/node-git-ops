@@ -6,7 +6,7 @@ const del = require('del');
 const gitClient = require('simple-git/promise');
 const gitDiffParser = require('git-diff-parser');
 
-const dir = path.join(__dirname, '../');
+const dir = path.join(__dirname, '../../');
 
 const getPrevCommitHash = repo => repo.log().then(log => log.all[1].hash);
 const getFirstCommitHash = repo => repo.log().then(log => log.all[log.all.length-1].hash);

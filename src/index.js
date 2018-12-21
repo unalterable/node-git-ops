@@ -13,6 +13,6 @@ const processRepo = async ({ repoUrl, router, since }) => {
 module.exports = processRepo({
   repoUrl: myGitOpsRepo,
   router: myActionRouter,
-  since: 'last commit',
+  since: 'first commit',
 })
   .catch(error => console.error(error) || process.exit(1));
