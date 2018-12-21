@@ -11,7 +11,7 @@ const getFile = (fileName) => {
   try {
     json = require(`../${configDir}${fileName}`);
   } catch (e) {
-    throw new Error(`there is no ${fileName}.json file in ${configDir}`);
+    throw new Error(`there is no ${fileName} file in ${configDir}`);
   }
   return json;
 };
@@ -23,7 +23,7 @@ module.exports = {
     const config = _.get(overrides, configPath) || _.get(getFile(fileName), configPath);
 
     if(config === undefined)
-      throw new Error(`there is no config '${configPath.join('.')}' in ${configDir}${fileName}.json`);
+      throw new Error(`there is no config '${configPath.join('.')}' in ${configDir}${fileName}`);
 
     return config;
   },

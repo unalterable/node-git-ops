@@ -13,6 +13,7 @@ console.info('=============');
 
 exec(rolloutStatusCommand);
 if (shell.error()) {
+  console.info();
   console.info('DEPLOYMENT FAILURE - ATTEMPTING ROLLBACK');
   exec(rollbackCommand);
   process.exit(1);
