@@ -1,0 +1,14 @@
+{
+  "git": {
+    "gitOpsRepoUrl": "https://github.com/djd-platform/test-cluster.git"
+  },
+  "jenkins": {
+    "host": "172.17.0.2:8080",
+    "username": "testUser",
+    "password": "ZchTCBxJKSJunrDGlxID"
+  },
+  "github": {
+    "username": "testUser",
+    "token": ""
+  }
+}
