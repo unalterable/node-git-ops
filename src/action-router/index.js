@@ -31,17 +31,6 @@ const fileToRouteInfo = actionRoutes => file => {
   return { type, route, action, params, file };
 };
 
-const executeAction = async ({ action, params, file }) => {
-  try {
-    await action({ ...file, params });
-    log(`'${file.path}': successfully actioned`);
-    return 'success';
-  } catch(e){
-    log(`'${file.path}': action failed (${e.message})`);
-    return 'failure';
-  }
-};
-
 const createActionRouter = () => {
   const actionRoutes = [];
 
@@ -52,12 +41,7 @@ const createActionRouter = () => {
     fileChanged: (route, action) => newRoute(FILE_CHANGED, route, action),
     fileRemoved: (route, action) => newRoute(FILE_REMOVED, route, action),
     anyChange: (route, action) => newRoute(ANY_CHANGE, route, action),
-    filesToActions: async files => {
-      const actionInstructions = files.map(fileToRouteInfo(actionRoutes)).map(printRouting);
-      const results = [];
-      for (const actionInstruction of actionInstructions) results.push(await executeAction(actionInstruction));
-      return results;
-    },
+    filesToActions: files => files.map(fileToRouteInfo(actionRoutes)).map(printRouting),
   };
   return thisRouter;
 };
