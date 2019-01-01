@@ -60,7 +60,7 @@ const createBuildJobConfig = vars => {
 
 const createDeployJobConfig = vars => {
   const configJSON = JSON.stringify({
-    namespace: vars.projectName,
+    namespace: vars.namespace || 'staging',
     imageName: vars.projectName,
     serviceName: vars.applicationName || vars.projectName,
     applicationName: vars.applicationName || vars.projectName,
