@@ -12,7 +12,7 @@ const initJenkins = ({ host, username, password, dockerHub }) => {
     info: () => jenkins.info({ depth: 2 }),
     triggerBuild: (name, parameters = {}) => jenkins.job.build({ name, parameters }),
     destroyJob: (projectName, jobName) => jenkins.job.destroy(`${projectName}/${jobName}`),
-    destroyFolder: (projectName, jobName) => jenkins.job.destroy(projectName),
+    destroyFolder: (folderName) => jenkins.job.destroy(folderName),
     createFolder: (name) => jenkins.job.create(name, createFolderConfig()),
     createPipelineJob: (name, config) => jenkins.job.create(name, config),
     getJobConfig: (name) => jenkins.job.config(name),
