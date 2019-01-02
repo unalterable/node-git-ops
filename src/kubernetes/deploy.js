@@ -10,8 +10,8 @@ const getImageTag = async () => {
   try { tag = process.argv[2].match(/imageTag=(.*)/)[1]; }
   catch (e) { tag = 'latest'; }
   return tag === 'latest'
-   ? await getCurrentVersionFromHub({ dockerHubRepo: config.imageName })
-   : tag;
+    ? await getCurrentVersionFromHub({ dockerHubRepo: config.imageName })
+    : tag;
 };
 
 const deployManifest = (manifest) => {
