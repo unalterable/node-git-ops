@@ -1,7 +1,7 @@
 const shell = require('shelljs');
 const config = require('../../deployment-config.json');
 
-const kubeConf = '--kubeconfig=$KUBECONF';
+const kubeConf = '--kubeconfig="$KUBECONF"';
 const namespace = `--namespace=${config.namespace}`;
 const kubectlCmd = `kubectl ${kubeConf} ${namespace}`;
 const rolloutStatusCommand = `${kubectlCmd} rollout status deployment ${config.applicationName}`;

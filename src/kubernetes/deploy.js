@@ -18,7 +18,7 @@ const deployManifest = (manifest) => {
   const manifestFile ='manifest.json';
   const formattedJson = JSON.stringify(manifest, null, 2);
   fs.writeFileSync(manifestFile, formattedJson);
-  const command = `kubectl --kubeconfig=$KUBECONF apply -f ${manifestFile}`;
+  const command = `kubectl --kubeconfig="$KUBECONF" apply -f ${manifestFile}`;
   console.info('=============');
   console.info(formattedJson);
   console.info(command);

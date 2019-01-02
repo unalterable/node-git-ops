@@ -14,7 +14,7 @@ const deploySecrets = ({ namespace, name, secrets }) => {
 
   const censoredSecretFlags = secrets.split(' ').map(secret => `--from-literal=${secret.split('=')[0]}=***`);
 
-  const cmd = `kubectl --kubeconfig=$KUBECONF --namespace=${namespace} create secret generic ${name}`;
+  const cmd = `kubectl --kubeconfig="$KUBECONF" --namespace=${namespace} create secret generic ${name}`;
 
   console.info(`${cmd} ${censoredSecretFlags.join(' ')}`);
   const response = shell.exec(`${cmd} ${secretFlags.join(' ')}`);
