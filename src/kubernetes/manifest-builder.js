@@ -14,7 +14,7 @@ const service = ({ serviceName, namespace, applicationName, containerPort, nodeP
     ports: [nodePort ? { port: containerPort, nodePort } : { port: containerPort }]},
 });
 
-const deployment = ({ applicationName, imageName, imageTag, containerPort, namespace, replicas, maxSurge, maxUnavailable, progressDeadlineSeconds, env, uuid }) => ({
+const deployment = ({ applicationName, imageName, containerPort, namespace, replicas, maxSurge, maxUnavailable, progressDeadlineSeconds, env, uuid }) => ({
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
@@ -31,12 +31,7 @@ const deployment = ({ applicationName, imageName, imageTag, containerPort, names
       metadata: { labels: { app: applicationName } },
       spec: {
         containers: [
-          {
-            name: applicationName,
-            image: `${imageName}:${imageTag}`,
-            ports: [{ containerPort }],
-            env,
-          },
+          { name: applicationName, image: imageName, ports: [{ containerPort }], env },
         ]
       }
     }

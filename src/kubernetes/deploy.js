@@ -29,15 +29,16 @@ const deployManifest = (manifest) => {
 
 const doDeployment = async () => {
   const uuid = uuidv4();
-  const imageTag = await getImageTag();
+  const imageName = config.imageName.includes(':') ? config.imageName : `${config.imageName}:${await getImageTag()}`;
   console.info('=============');
   console.info('ID for this release:');
   console.info(uuid);
+  console.info('Container image this release:');
+  console.info(imageName);
   console.info('=============');
-  console.log(imageTag);
   deployManifest(manifestBuilder.namespace({ ...config, uuid }));
   deployManifest(manifestBuilder.service({ ...config, uuid }));
-  deployManifest(manifestBuilder.deployment({ ...config, uuid, imageTag }));
+  deployManifest(manifestBuilder.deployment({ ...config, uuid, imageName }));
 };
 
 doDeployment();
