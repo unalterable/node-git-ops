@@ -10,11 +10,7 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-      <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
 {{{ parameters }}}
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
   <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
       <triggers>
         <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.3">

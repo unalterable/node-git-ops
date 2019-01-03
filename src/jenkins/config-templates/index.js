@@ -8,34 +8,33 @@ const readFile = name => fs.readFileSync(__dirname + '/' + name).toString();
 const renderFile = (fileName, vars) => render(readFile(fileName), vars);
 const renderDefaultScript = (fileName, vars) => render(readFile(`default-scripts/${fileName}`), vars);
 const renderPipelineJob = ({ parameters, pipelineScript }) => renderFile('pipeline-job.xml', {
-  parameters: indent(parameters, 8),
+  parameters: indent(parameters, 4),
   pipelineScript: pipelineScript,
 });
-const renderJobParams = params => params.map(param => renderFile('parameter.xml', param)).join('');
+const renderJobParams = params => params.length ? `
+<hudson.model.ParametersDefinitionProperty><parameterDefinitions>\n
+${params.map(param => renderFile('parameter.xml', param)).join('\n')}
+</parameterDefinitions></hudson.model.ParametersDefinitionProperty>\n` : '';
 
-const buildJobParams = [
-  {
-    name: 'gitRef',
-    description: 'Can be a git commit hash, git tag, or git branch name',
-    defaultValue: 'master',
-    trimString: 'true',
-  },
-  {
-    name: 'versionIncrement',
-    description: 'Increment the version how? (major, minor, or patch)',
-    defaultValue: 'patch',
-    trimString: 'true',
-  },
-];
+const gitReferenceParam = {
+  name: 'gitRef',
+  description: 'Can be a git commit hash, git tag, or git branch name',
+  defaultValue: 'master',
+  trimString: 'true',
+};
+const versionIncrementParam = {
+  name: 'versionIncrement',
+  description: 'Increment the version how? (major, minor, or patch)',
+  defaultValue: 'patch',
+  trimString: 'true',
+};
 
-const deployJobParams = [
-  {
-    name: 'imageTag',
-    description: 'The tag (usually a version number) of the image you\'re trying to deploy',
-    defaultValue: 'latest',
-    trimString: 'true',
-  },
-];
+const imageTagParam = {
+  name: 'imageTag',
+  description: 'The tag (usually a version number) of the image you\'re trying to deploy',
+  defaultValue: 'latest',
+  trimString: 'true',
+};
 
 const createBuildJobConfig = vars => {
   const jenkinsSlave = vars.jenkinsSlave || defaultJenkinsSlave;
@@ -46,8 +45,10 @@ const createBuildJobConfig = vars => {
     ...vars,
   });
 
+  const parameters = [gitReferenceParam, versionIncrementParam].concat(vars.parameters || []);
+
   return renderPipelineJob({
-    parameters: renderJobParams(buildJobParams.concat(vars.parameters || [])),
+    parameters: renderJobParams(parameters),
     pipelineScript: renderDefaultScript('build-pipeline', {
       gitRepo: vars.gitRepo,
       jenkinsSlave,
@@ -59,7 +60,7 @@ const createBuildJobConfig = vars => {
 };
 
 const createDeployJobConfig = vars => {
-  const configJSON = JSON.stringify({
+  const config = {
     namespace: vars.namespace || 'staging',
     imageName: vars.projectName,
     serviceName: vars.applicationName || vars.projectName,
@@ -70,18 +71,22 @@ const createDeployJobConfig = vars => {
     maxUnavailable: 0,
     progressDeadlineSeconds: 300,
     ...vars,
-  }, null, 2);
+  };
 
   const jenkinsSlave = vars.jenkinsSlave || defaultJenkinsSlave;
   const deployScript = vars.deployScript || renderDefaultScript('deploy-step.sh', {
-    configJSON,
-    ...JSON.parse(configJSON),
+    configJSON: JSON.stringify(config, null, 2),
+    ...config,
   });
 
   const confirmScript = vars.confirmScript || renderDefaultScript('confirm-step.sh', {});
 
+  const parameters = []
+    .concat(config.imageName.includes(':') ? [] : [imageTagParam])
+    .concat(vars.parameters || []);
+
   return renderPipelineJob({
-    parameters: renderJobParams(deployJobParams.concat(vars.parameters || [])),
+    parameters: renderJobParams(parameters),
     pipelineScript: renderDefaultScript('deploy-pipeline', {
       deployScript,
       confirmScript,
