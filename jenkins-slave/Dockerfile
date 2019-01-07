@@ -16,8 +16,6 @@ RUN apt-get install -y git
 RUN curl https://download.docker.com/linux/static/stable/x86_64/docker-18.06.1-ce.tgz -o install.tgz && \
   tar xzvf install.tgz && \
   cp docker/* /usr/bin/
-ENV DOCKER_URL 172.17.0.1
-RUN echo "alias docker=\"docker -H $DOCKER_URL\"" > /home/jenkins/.bashrc
 
 ENV NVM_DIR /home/jenkins/.nvm
 RUN mkdir -p $NVM_DIR
